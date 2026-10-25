@@ -1,4 +1,6 @@
 .venv
 .idea
 
-/books_cleaned.csv
+/.env
+
+/text-classification.ipynb
