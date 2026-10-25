@@ -3,4 +3,6 @@
 
 /.env
 
-/text-classification.ipynb
+/books_cleaned.csv
+/tagged_description.txt
+/books_with_categories.csv
