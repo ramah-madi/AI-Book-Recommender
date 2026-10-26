@@ -53,15 +53,15 @@ def retrieve_semantic_recommendations(
     book_recs = book_recs.head(final_top_k)
 
     if tone == "Happy":
-        book_recs.sort_values(by="joy", ascending=False, inplace=True)
+        book_recs = book_recs.sort_values(by="joy", ascending=False)
     elif tone == "Surprising":
-        book_recs.sort_values(by="surprise", ascending=False, inplace=True)
+        book_recs = book_recs.sort_values(by="surprise", ascending=False)
     elif tone == "Angry":
-        book_recs.sort_values(by="anger", ascending=False, inplace=True)
+        book_recs = book_recs.sort_values(by="anger", ascending=False)
     elif tone == "Suspenseful":
-        book_recs.sort_values(by="fear", ascending=False, inplace=True)
+        book_recs = book_recs.sort_values(by="fear", ascending=False)
     elif tone == "Sad":
-        book_recs.sort_values(by="sadness", ascending=False, inplace=True)
+        book_recs = book_recs.sort_values(by="sadness", ascending=False)
 
     return book_recs
 
@@ -75,20 +75,33 @@ def recommend_books(
     results = []
 
     for _, row in recommendations.iterrows():
+        # Handle missing descriptions safely
         description = row["description"]
-        truncated_desc_split = description.split()
-        truncated_description = " ".join(truncated_desc_split[:30]) + "..."
+        if pd.isna(description):
+            description = "No description available."
+        truncated_desc_split = str(description).split()
+        truncated_description = " ".join(
+            truncated_desc_split[:30]) + "..." if truncated_desc_split else "No description available."
 
-        authors_split = row["authors"].split(";")
-        if len(authors_split) == 2:
-            authors_str = f"{authors_split[0]} and {authors_split[1]}"
-        elif len(authors_split) > 2:
-            authors_str = f"{', '.join(authors_split[:-1])}, and {authors_split[-1]}"
+        # Handle missing authors safely
+        authors = row["authors"]
+        if pd.isna(authors):
+            authors_str = "Unknown Author"
         else:
-            authors_str = row["authors"]
+            authors_split = str(authors).split(";")
+            if len(authors_split) == 2:
+                authors_str = f"{authors_split[0]} and {authors_split[1]}"
+            elif len(authors_split) > 2:
+                authors_str = f"{', '.join(authors_split[:-1])}, and {authors_split[-1]}"
+            else:
+                authors_str = authors_split[0]
 
-        caption = f"**{row['title']}**\n*by {authors_str}*\n\n{truncated_description}"
+        # Handle missing titles safely
+        title = row["title"] if not pd.isna(row["title"]) else "Untitled"
+
+        caption = f"**{title}**\n*by {authors_str}*\n\n{truncated_description}"
         results.append((row["large_thumbnail"], caption))
+
     return results
 
 
@@ -96,7 +109,9 @@ categories = ["All"] + sorted(books["simple_categories"].unique())
 tones = ["All"] + ["Happy", "Surprising", "Angry", "Suspenseful", "Sad"]
 
 # --- Modernized UI Layout ---
-with gr.Blocks(theme=gr.themes.Glass()) as dashboard:
+dashboard = gr.Blocks()
+
+with dashboard:
     # App Header with a clean subtitle
     gr.Markdown(
         """
@@ -137,5 +152,6 @@ with gr.Blocks(theme=gr.themes.Glass()) as dashboard:
         outputs=output
     )
 
+# Launch separately without a 'with' statement
 if __name__ == "__main__":
-    dashboard.launch()
+    dashboard.launch(theme=gr.themes.Glass())
