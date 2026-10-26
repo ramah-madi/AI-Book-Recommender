@@ -190,16 +190,4 @@ After cleaning and filtering (requiring descriptions ≥ 25 words, no missing ke
 - ISBN-13, published year, number of pages
 - Average rating, categories
 - Book cover thumbnail URLs
-- AI-generated genre labels and emotion scores
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open issues or submit pull requests.
-
----
-
-## 📄 License
-
-This project is open-source and available under the [MIT License](LICENSE).
+- AI-generated genre labels and emotion scoresS
