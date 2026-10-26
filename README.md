@@ -6,12 +6,12 @@ An AI-powered book recommendation system that uses **semantic search** and **emo
 
 ## 🖥️ Demo
 
-| Semantic Search by Topic | Filter by Emotional Tone |
-|:---:|:---:|
+|                  Semantic Search by Topic                  |                    Filter by Emotional Tone                     |
+| :--------------------------------------------------------: | :-------------------------------------------------------------: |
 | ![Demo 1 – Search for books about birds](assets/demo1.png) | ![Demo 2 – Suspenseful emotional tone filter](assets/demo2.png) |
 
-> **Left:** Searching *"A book about birds"* returns semantically relevant recommendations with book covers and author captions.  
-> **Right:** Filtering results by the *Suspenseful* emotional tone re-ranks books using fear-emotion scores from the sentiment model.
+> **Left:** Searching _"A book about birds"_ returns semantically relevant recommendations with book covers and author captions.  
+> **Right:** Filtering results by the _Suspenseful_ emotional tone re-ranks books using fear-emotion scores from the sentiment model.
 
 ---
 
@@ -55,6 +55,7 @@ book-recommender/
 The project is built across **5 sequential notebooks + a dashboard**, each building on the previous step:
 
 ### 1. `data-exploration.ipynb` — Data Loading & Cleaning
+
 - Downloads the [7k Books with Metadata](https://www.kaggle.com/datasets/dylanjcastillo/7k-books-with-metadata) dataset via `kagglehub`
 - Explores missing values with heatmaps (Seaborn)
 - Analyzes correlations between `num_pages`, `age_of_book`, `average_rating`, and `missing_description`
@@ -63,12 +64,14 @@ The project is built across **5 sequential notebooks + a dashboard**, each build
 - Outputs: `books_cleaned.csv`
 
 ### 2. `text-classification.ipynb` — Genre Classification
+
 - Maps fine-grained categories into simplified labels: `Fiction`, `Nonfiction`, `Children's Fiction`
 - Uses **zero-shot classification** (`facebook/bart-large-mnli`) to classify books with no existing category
 - Validates model accuracy against labeled data (~300 books each for Fiction and Nonfiction)
 - Outputs: `books_with_categories.csv`
 
 ### 3. `sentiment-analysis.ipynb` — Emotion Scoring
+
 - Uses `j-hartmann/emotion-english-distilroberta-base` to classify emotions sentence-by-sentence
 - Emotions tracked: `anger`, `disgust`, `fear`, `joy`, `sadness`, `surprise`, `neutral`
 - Takes the **max emotion score per sentence** across all sentences in a description
@@ -76,12 +79,14 @@ The project is built across **5 sequential notebooks + a dashboard**, each build
 - Outputs: `books_with_emotions.csv`
 
 ### 4. `vector-search.ipynb` — Semantic Vector Search
+
 - Embeds all `tagged_description` values using `google/embeddinggemma-300m` (via LangChain + HuggingFace)
 - Stores embeddings in a **ChromaDB** vector store
 - Implements `retrieve_semantic_recommendations()` for top-k similarity search
 - Outputs: in-memory ChromaDB used by the dashboard
 
 ### 5. `gradio-dashboard.py` — Interactive Web App
+
 - Loads `books_with_emotions.csv` and initializes the ChromaDB vector store
 - Accepts a free-text query, optional category filter, and optional emotional tone filter
 - Retrieves top-50 semantic matches → filters by category → selects top-16 → re-ranks by emotion
@@ -145,17 +150,17 @@ Then open your browser at **http://127.0.0.1:7860**
 
 ## 🛠️ Tech Stack
 
-| Component | Technology |
-|---|---|
-| Data Processing | `pandas`, `numpy` |
-| Data Visualization | `seaborn`, `matplotlib` |
-| Genre Classification | `facebook/bart-large-mnli` (zero-shot) |
-| Emotion Analysis | `j-hartmann/emotion-english-distilroberta-base` |
-| Text Embeddings | `google/embeddinggemma-300m` |
-| Vector Store | `ChromaDB` via `langchain-chroma` |
-| LLM Orchestration | `LangChain` |
-| Web UI | `Gradio` (Glass theme) |
-| ML Backend | `PyTorch` + `Transformers` + `sentence-transformers` |
+| Component            | Technology                                           |
+| -------------------- | ---------------------------------------------------- |
+| Data Processing      | `pandas`, `numpy`                                    |
+| Data Visualization   | `seaborn`, `matplotlib`                              |
+| Genre Classification | `facebook/bart-large-mnli` (zero-shot)               |
+| Emotion Analysis     | `j-hartmann/emotion-english-distilroberta-base`      |
+| Text Embeddings      | `google/embeddinggemma-300m`                         |
+| Vector Store         | `ChromaDB` via `langchain-chroma`                    |
+| LLM Orchestration    | `LangChain`                                          |
+| Web UI               | `Gradio` (Glass theme)                               |
+| ML Backend           | `PyTorch` + `Transformers` + `sentence-transformers` |
 
 ---
 
@@ -172,9 +177,15 @@ chromadb
 torch
 transformers
 sentence-transformers
+kagglehub
+seaborn
+matplotlib
+tqdm
+huggingface_hub
 ```
 
 Install with:
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -186,6 +197,7 @@ pip install -r requirements.txt
 **[7k Books with Metadata](https://www.kaggle.com/datasets/dylanjcastillo/7k-books-with-metadata)** by Dylan Castillo on Kaggle.
 
 After cleaning and filtering (requiring descriptions ≥ 25 words, no missing key fields), the final dataset contains approximately **6,800+ books** with:
+
 - Title, subtitle, authors
 - ISBN-13, published year, number of pages
 - Average rating, categories
